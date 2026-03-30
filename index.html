@@ -752,7 +752,7 @@ thead .matrix-col-day.we{background:#fff3e0}
 // ── Supabase Konfiguration ──────────────────────────────────
 const SUPABASE_URL = "https://jwicwnrgsafhimzvsfzx.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-4sMv0vaOdmbSBM7ELQzGw_VEPNg5W8";
-const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{storageKey:"sb-auth-demo"}});
 // ────────────────────────────────────────────────────────────
 
 // ── Soft License ────────────────────────────────────────────
