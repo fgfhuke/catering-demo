@@ -778,10 +778,11 @@ async function lizenzOnlinePruefen(key) {
   // Gibt zurück: "PERMANENT" | "YYYY-MM-DD" | false | null (Netzwerkfehler)
   try {
     const { data, error } = await _sb.rpc("pruefe_lizenz", { p_schluessel: key });
-    if(error) return null;
+    if(error) { console.error("Lizenz-RPC Fehler:", error); return null; }
     if(data === "UNGUELTIG") return false;
     return data; // "PERMANENT" oder Datumsstring
   } catch(e) {
+    console.error("Lizenz-RPC Exception:", e);
     return null;
   }
 }
