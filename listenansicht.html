@@ -80,7 +80,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 .autosave-dot.err{background:var(--red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap{position:-webkit-sticky;position:sticky;top:0;z-index:11;background:var(--bg);padding-bottom:8px;margin-bottom:4px;margin-right:34px}
 .search-wrap input{padding-left:52px;padding-right:44px;font-size:17px}
 .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:32px;pointer-events:none;line-height:1}
 .search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--border);border:none;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--muted);line-height:1;padding:0}
@@ -97,7 +97,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 .person-row.checked{background:var(--green-bg);border-color:var(--green-brd)}
 
 /* Alphabet-Sidebar */
-.alpha-sidebar{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 2px;gap:1px;position:sticky;top:0;align-self:flex-start;margin-left:6px;background:transparent;z-index:10;-webkit-tap-highlight-color:transparent;user-select:none}
+.alpha-sidebar{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 2px;gap:1px;position:-webkit-sticky;position:sticky;top:60px;align-self:flex-start;margin-left:6px;background:transparent;z-index:10;-webkit-tap-highlight-color:transparent;user-select:none}
 .alpha-sidebar span{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);padding:1px 5px;border-radius:4px;cursor:pointer;line-height:1.6;min-width:20px;text-align:center}
 .alpha-sidebar span:active,.alpha-sidebar span.active{background:var(--accent);color:#fff}
 .alpha-sidebar span.inactive{color:var(--border)}
@@ -269,7 +269,7 @@ body.is-touch .tabs{padding:0 4px}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
       <div class="login-logo">Film · Set</div>
       <div style="text-align:right;font-family:var(--mono);font-size:11px;color:var(--border2);letter-spacing:0.08em;line-height:1.6">
-        <div>V 3.3</div>
+        <div>V 3.4</div>
         <div style="font-size:10px">© JH 2026</div>
       </div>
     </div>
@@ -289,7 +289,7 @@ body.is-touch .tabs{padding:0 4px}
     <button class="btn-icon" id="topbar-back-touch" onclick="zurückZuTouch()" title="Zurück zur mobilen Ansicht" style="display:none;font-size:22px;color:var(--accent)">←</button>
     <div class="topbar-brand" id="topbar-brand-btn" style="cursor:pointer;user-select:none;-webkit-user-select:none">Catering <span id="topbar-projekt" style="opacity:0.7;font-size:11px"></span></div>
     <div class="topbar-date" id="topbar-date"></div>
-    <div style="font-family:var(--mono);font-size:11px;color:var(--border2);letter-spacing:0.08em">V 3.3</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--border2);letter-spacing:0.08em">V 3.4</div>
     <button class="btn-icon" onclick="logout()" title="Abmelden" style="padding:8px;background:transparent;border:none;color:var(--muted);cursor:pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><line x1="12" y1="3" x2="12" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button>
   </div>
   <div class="tabs">
@@ -558,7 +558,7 @@ body.is-touch .tabs{padding:0 4px}
   <div class="touch-topbar">
     <div class="touch-brand" id="touch-brand-btn" style="font-size:17px">Liste <span id="touch-projekt" style="opacity:.7;font-size:13px"></span></div>
     <span class="touch-save-status" id="touch-save-status"></span>
-    <span style="font-family:var(--mono);font-size:13px;color:var(--border2);letter-spacing:.08em" id="touch-version">V 3.3</span>
+    <span style="font-family:var(--mono);font-size:13px;color:var(--border2);letter-spacing:.08em" id="touch-version">V 3.4</span>
     <button class="btn-icon" onclick="logout()" style="font-size:18px;color:var(--muted)" style="padding:8px;background:transparent;border:none;color:var(--muted);cursor:pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><line x1="12" y1="3" x2="12" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button>
   </div>
 

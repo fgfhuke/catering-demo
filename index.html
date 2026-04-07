@@ -80,7 +80,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 .autosave-dot.err{background:var(--red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap{position:-webkit-sticky;position:sticky;top:0;z-index:11;background:var(--bg);padding-bottom:8px;margin-bottom:4px;margin-right:34px}
 .search-wrap input{padding-left:52px;padding-right:44px;font-size:17px}
 .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:32px;pointer-events:none;line-height:1}
 .search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--border);border:none;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--muted);line-height:1;padding:0}
@@ -97,7 +97,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 .person-row.checked{background:var(--green-bg);border-color:var(--green-brd)}
 
 /* Alphabet-Sidebar */
-.alpha-sidebar{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 2px;gap:1px;position:sticky;top:0;align-self:flex-start;margin-left:6px;background:transparent;z-index:10;-webkit-tap-highlight-color:transparent;user-select:none}
+.alpha-sidebar{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 2px;gap:1px;position:-webkit-sticky;position:sticky;top:60px;align-self:flex-start;margin-left:6px;background:transparent;z-index:10;-webkit-tap-highlight-color:transparent;user-select:none}
 .alpha-sidebar span{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);padding:1px 5px;border-radius:4px;cursor:pointer;line-height:1.6;min-width:20px;text-align:center}
 .alpha-sidebar span:active,.alpha-sidebar span.active{background:var(--accent);color:#fff}
 .alpha-sidebar span.inactive{color:var(--border)}
@@ -799,6 +799,16 @@ function _lizenzLoeschen() {
 }
 
 async function lizenzBeiStartPruefen() {
+  // URL-Parameter: ?lizenz=XXXX-XXXX → Auto-Aktivierung beim Erststart
+  const urlLizenz = new URLSearchParams(window.location.search).get("lizenz");
+  if(urlLizenz && !localStorage.getItem(LS_NS + "lizenz")) {
+    const raw = urlLizenz.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+    const formatted = raw.length > 4 ? raw.slice(0, 4) + "-" + raw.slice(4) : raw;
+    document.getElementById("lizenz-input").value = formatted;
+    await lizenzAktivieren();
+    return;
+  }
+
   const key = localStorage.getItem(LS_NS + "lizenz");
   if(!key) { zeigeLizenzScreen(); return; }
 
@@ -1149,6 +1159,8 @@ async function login() {
     const gespeichertUserId = localStorage.getItem(LS_NS + "user_id");
     if(gespeichertPw && pw === gespeichertPw && email === gespeichertEmail) {
       _userId = gespeichertUserId;
+      const gespeichertProjekt = localStorage.getItem(LS_NS + "projekt");
+      if(gespeichertProjekt) PROJEKT_KUERZEL = gespeichertProjekt;
       const personen = JSON.parse(localStorage.getItem(LS_NS + "personen")||"[]");
       const teilnahmeIds = JSON.parse(localStorage.getItem(LS_NS + "teilnahme_ids")||"[]");
       document.getElementById("login-projekt").textContent = PROJEKT_KUERZEL ? "· " + PROJEKT_KUERZEL : "";
@@ -1183,6 +1195,8 @@ async function login() {
       return;
     }
     _userId = authData.user.id;
+    const projektMeta = authData.user.user_metadata?.projekt_name;
+    if(projektMeta) PROJEKT_KUERZEL = projektMeta;
     const { data: demoGueltig } = await _sb.rpc("pruefe_demo_nutzer");
     if(demoGueltig === false) {
       await _sb.auth.signOut();
