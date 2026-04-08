@@ -3027,58 +3027,40 @@ function matrixRendern(monat) {
       `<span style="display:block;font-size:11px;font-weight:700;color:${isWE?"#d4740a":"inherit"}">${tag}</span></th>`;
   }).join("");
 
-  const gruppen={};
-  allePersonen.filter(p=>p.aktiv!==false).forEach(p=>{
-    const abt=p.position||"Ohne Abteilung";
-    if(!gruppen[abt]) gruppen[abt]=[];
-    gruppen[abt].push(p);
-  });
-  if(!gruppen["Komparsen"]) gruppen["Komparsen"]=[];
-  gruppen["Komparsen"].push({id:"KOMP01", nachname:"Komparsen", vorname:"", _isKomp:true});
-  const sortiert=Object.keys(gruppen).sort((a,b)=>{
-    const ia=abtReih.indexOf(a),ib=abtReih.indexOf(b);
-    if(ia===-1&&ib===-1) return a.localeCompare(b,"de");
-    return (ia===-1?999:ia)-(ib===-1?999:ib);
-  });
+  const personenSortiert=[...allePersonen.filter(p=>p.aktiv!==false)].sort((a,b)=>a.nachname.localeCompare(b.nachname,"de"));
 
   let rows="";
-  sortiert.forEach(abt=>{
-    rows+=`<tr class="matrix-row-group"><td class="matrix-col-name" colspan="${tage.length+2}">${abt}</td></tr>`;
-    gruppen[abt].sort((a,b)=>a.nachname.localeCompare(b.nachname,"de")).forEach(p=>{
-      if(p._isKomp) {
-        const kompSumme=Object.values(matrixKomparsen).reduce((a,b)=>a+(b||0),0);
-        const zellen=tage.map(t=>{
-          const d=new Date(t+"T12:00:00");
-          const isWE=d.getDay()===0||d.getDay()===6;
-          const wert=matrixKomparsen[t]||0;
-          return `<td id="mc-KOMP01__${t.slice(5)}" class="matrix-cell${wert>0?" an":""}${isWE?" we":""}" onclick="matrixKompKlick(this,'${t}')">${wert||"·"}</td>`;
-        }).join("");
-        rows+=`<tr>
-          <td class="matrix-col-name">Komparsen</td>
-          <td class="matrix-col-sum" id="ms-KOMP01">${kompSumme||""}</td>
-          ${zellen}
-        </tr>`;
-        return;
-      }
-      const pid=p.id;
-      const name=p.vorname?`${p.nachname}, ${p.vorname}`:p.nachname;
-      const anSet=matrixAnwesend[pid]||new Set();
-      const zellen=tage.map(t=>{
-        const d=new Date(t+"T12:00:00");
-        const isWE=d.getDay()===0||d.getDay()===6;
-        const an=anSet.has(t);
-        const key=`${pid}__${t.slice(5)}`;
-        return `<td id="mc-${key}" class="matrix-cell${an?" an":""}${isWE?" we":""}" onclick="matrixToggleZelle('${pid}','${t}')">${an?"✓":"·"}</td>`;
-      }).join("");
-      rows+=`<tr>
-        <td class="matrix-col-name" title="${name}">
-          <button class="matrix-edit-btn" onclick="event.stopPropagation();editOeffnen('${pid}')" title="Person bearbeiten">✏️</button><button class="matrix-del-btn" onclick="event.stopPropagation();matrixPersonLoeschen('${pid}')" title="Person löschen">🗑</button>${name}
-        </td>
-        <td class="matrix-col-sum" id="ms-${pid}">${anSet.size||""}</td>
-        ${zellen}
-      </tr>`;
-    });
+  personenSortiert.forEach(p=>{
+    const pid=p.id;
+    const name=p.vorname?`${p.nachname}, ${p.vorname}`:p.nachname;
+    const anSet=matrixAnwesend[pid]||new Set();
+    const zellen=tage.map(t=>{
+      const d=new Date(t+"T12:00:00");
+      const isWE=d.getDay()===0||d.getDay()===6;
+      const an=anSet.has(t);
+      const key=`${pid}__${t.slice(5)}`;
+      return `<td id="mc-${key}" class="matrix-cell${an?" an":""}${isWE?" we":""}" onclick="matrixToggleZelle('${pid}','${t}')">${an?"✓":"·"}</td>`;
+    }).join("");
+    rows+=`<tr>
+      <td class="matrix-col-name" title="${name}">
+        <button class="matrix-edit-btn" onclick="event.stopPropagation();editOeffnen('${pid}')" title="Person bearbeiten">✏️</button><button class="matrix-del-btn" onclick="event.stopPropagation();matrixPersonLoeschen('${pid}')" title="Person löschen">🗑</button>${name}
+      </td>
+      <td class="matrix-col-sum" id="ms-${pid}">${anSet.size||""}</td>
+      ${zellen}
+    </tr>`;
   });
+  const kompSumme=Object.values(matrixKomparsen).reduce((a,b)=>a+(b||0),0);
+  const kompZellen=tage.map(t=>{
+    const d=new Date(t+"T12:00:00");
+    const isWE=d.getDay()===0||d.getDay()===6;
+    const wert=matrixKomparsen[t]||0;
+    return `<td id="mc-KOMP01__${t.slice(5)}" class="matrix-cell${wert>0?" an":""}${isWE?" we":""}" onclick="matrixKompKlick(this,'${t}')">${wert||"·"}</td>`;
+  }).join("");
+  rows+=`<tr>
+    <td class="matrix-col-name">Komparsen</td>
+    <td class="matrix-col-sum" id="ms-KOMP01">${kompSumme||""}</td>
+    ${kompZellen}
+  </tr>`;
 
   c.innerHTML=`<div class="matrix-wrap"><table class="matrix-table">
     <thead><tr>
