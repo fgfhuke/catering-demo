@@ -2751,16 +2751,13 @@ function touchToggle(id) {
     const warAn = an;
     toggle(id);
     const suche = document.getElementById("touch-suche").value.toLowerCase().trim();
-    touchRenderListe(suche); // sofort Haken zeigen
-    if(!warAn) {
-      // Eingetragen → nach 1 Sek. Suche leeren
-      setTimeout(()=>{
-        document.getElementById("touch-suche").value = "";
-        document.getElementById("touch-suche-clear").style.display = "none";
-        document.getElementById("touch-list").innerHTML = '';
-        touchSaveStatusAktualisieren();
-      }, 1000);
-    }
+    touchRenderListe(suche); // sofort Haken setzen/entfernen
+    setTimeout(()=>{
+      document.getElementById("touch-suche").value = "";
+      document.getElementById("touch-suche-clear").style.display = "none";
+      document.getElementById("touch-list").innerHTML = '';
+      touchSaveStatusAktualisieren();
+    }, 1000);
     return;
   }
 
