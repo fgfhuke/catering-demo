@@ -2341,8 +2341,11 @@ function touchToggle(id) {
   const name = p ? (p.vorname ? `${p.nachname}, ${p.vorname}` : p.nachname) : id;
 
   if(!touchTempDatum) {
-    // Heute → direkt togglen, kein Overlay (Scrollposition bleibt via renderListe)
+    // Heute → direkt togglen, kein Overlay
     toggle(id);
+    // Touch-Liste aktualisieren (renderListe() aktualisiert nur Desktop-Liste)
+    const suche = document.getElementById("touch-suche")?.value?.toLowerCase().trim() || "";
+    renderTouchListe(suche);
     return;
   }
 

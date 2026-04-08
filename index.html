@@ -2750,9 +2750,10 @@ function touchToggle(id) {
     // Heute → direkt togglen, kein Overlay
     const warAn = an;
     toggle(id);
-    if(warAn) {
-      touchRenderListe(document.getElementById("touch-suche").value.toLowerCase().trim());
-    } else {
+    const suche = document.getElementById("touch-suche").value.toLowerCase().trim();
+    touchRenderListe(suche); // sofort Haken zeigen
+    if(!warAn) {
+      // Eingetragen → nach 1 Sek. Suche leeren
       setTimeout(()=>{
         document.getElementById("touch-suche").value = "";
         document.getElementById("touch-suche-clear").style.display = "none";
