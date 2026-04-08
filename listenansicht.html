@@ -907,6 +907,9 @@ document.getElementById("pw-input").addEventListener("keydown",e=>{if(e.key==="E
     return;
   }
   _userId = session.user.id;
+  const projektMeta = session.user.user_metadata?.projekt_name;
+  if(projektMeta) PROJEKT_KUERZEL = projektMeta;
+  else { const stored = localStorage.getItem(LS_NS + "projekt"); if(stored) PROJEKT_KUERZEL = stored; }
   // Session vorhanden → Daten aus Cache laden
   const personen = JSON.parse(localStorage.getItem(LS_NS + "personen")||"[]");
   const teilnahmeIds = JSON.parse(localStorage.getItem(LS_NS + "teilnahme_ids")||"[]");
