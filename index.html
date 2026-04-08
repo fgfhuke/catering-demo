@@ -2760,14 +2760,21 @@ function touchToggleBestaetigen() {
   if (!touchConfirmId) return;
   const id = touchConfirmId;
   touchConfirmId = null;
+  const warAn = anwesendHeute.has(id);
   toggle(id);
-  setTimeout(()=>{
-    document.getElementById("touch-suche").value = "";
-    document.getElementById("touch-suche-clear").style.display = "none";
-    document.getElementById("touch-list").innerHTML = '';
-    touchSaveStatusAktualisieren();
-    if(touchTempDatum) touchZuHeuteZurueck();
-  }, 1000);
+  if(warAn) {
+    // Person wurde abgehakt → Liste aktualisieren, Person sichtbar lassen
+    touchRenderListe(document.getElementById("touch-suche").value.toLowerCase().trim());
+  } else {
+    // Person wurde eingetragen → Suche leeren, nächste Person
+    setTimeout(()=>{
+      document.getElementById("touch-suche").value = "";
+      document.getElementById("touch-suche-clear").style.display = "none";
+      document.getElementById("touch-list").innerHTML = '';
+      touchSaveStatusAktualisieren();
+      if(touchTempDatum) touchZuHeuteZurueck();
+    }, 1000);
+  }
 }
 
 function touchToggleAbbrechen() {
