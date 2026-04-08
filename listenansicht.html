@@ -1203,6 +1203,8 @@ document.getElementById("suche").addEventListener("focus", () => {
 
 function renderListe() {
   const container = document.getElementById("personen-list");
+  const panel = document.getElementById("tab-anwesenheit");
+  const scrollPos = panel ? panel.scrollTop : 0;
   let letzterGruppe="";
   const buchstaben=new Set();
   const html=allePersonen.map(p=>{
@@ -1244,6 +1246,7 @@ function renderListe() {
     </div>`;
   }).join("");
   container.innerHTML=html||'<div style="color:var(--muted);padding:16px 4px;font-size:15px">Keine Einträge.</div>';
+  if(panel) panel.scrollTop = scrollPos;
 
   // Alphabet-Sidebar aufbauen (nur bei Nachname-Sortierung sinnvoll)
   const sidebar=document.getElementById("alpha-sidebar");
