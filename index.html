@@ -899,17 +899,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function heute() { return new Date().toISOString().split("T")[0]; }
 
-// ── Wochentag-Wallpaper ──
+// ── Wallpaper ──
 function wallpaperSetzen() {
-  const tag = new Date().getDay(); // 0=So, 1=Mo, 2=Di...
-  const bilder = {0:"So.JPG", 1:"Mo.JPG", 2:"Di.JPG", 3:"Mi.JPG", 4:"Do.JPG", 5:"Fr.JPG", 6:"Sa.JPG"};
-  const datei = bilder[tag] || "Mo.JPG";
   const appTouch = document.getElementById("app-touch");
-  const app = document.getElementById("app");
-  // background-image separat setzen damit flex-Layout erhalten bleibt
-  // Wallpaper nur auf Touch-Interface
   if(appTouch) {
-    appTouch.style.backgroundImage = `url('${datei}')`;
+    appTouch.style.backgroundImage = "url('Mo.JPG')";
     appTouch.style.backgroundSize = "cover";
     appTouch.style.backgroundPosition = "center";
     appTouch.style.backgroundRepeat = "no-repeat";

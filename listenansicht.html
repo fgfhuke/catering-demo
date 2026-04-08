@@ -938,6 +938,18 @@ document.getElementById("pw-input").addEventListener("keydown",e=>{if(e.key==="E
   }
 })();
 
+// ── Wallpaper ──
+function wallpaperSetzen() {
+  const appTouch = document.getElementById("app-touch");
+  if(appTouch) {
+    appTouch.style.backgroundImage = "url('Mo.JPG')";
+    appTouch.style.backgroundSize = "cover";
+    appTouch.style.backgroundPosition = "center";
+    appTouch.style.backgroundRepeat = "no-repeat";
+    appTouch.style.backgroundAttachment = "fixed";
+  }
+}
+
 async function login() {
   const pw=document.getElementById("pw-input").value.trim();
   if(!pw)return;
@@ -960,7 +972,7 @@ async function login() {
       offlineBannerAktualisieren();
       setAutosaveStatus("offline");
       const isTouch = navigator.maxTouchPoints > 0 || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      if(isTouch) { document.getElementById("app-touch").classList.add("active"); touchInit(); }
+      if(isTouch) { document.getElementById("app-touch").classList.add("active"); wallpaperSetzen(); touchInit(); }
       else { document.getElementById("app").classList.add("active"); renderPersonenverwaltung(); }
       heuteDatum();
       btn.disabled=false; btn.textContent="Anmelden";
@@ -999,6 +1011,7 @@ async function login() {
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       if(isTouch) {
         document.getElementById("app-touch").classList.add("active");
+        wallpaperSetzen();
         touchInit();
       } else {
         document.getElementById("app").classList.add("active");
@@ -1802,6 +1815,7 @@ document.getElementById("new-vorname").addEventListener("keydown",e=>{if(e.key==
 document.getElementById("new-abt").addEventListener("keydown",e=>{if(e.key==="Enter")personAnlegen();});
 
 async function personAnlegen() {
+  if(istOffline || !navigator.onLine) { document.getElementById("add-error").textContent="Neue Personen können im Offline-Modus nicht angelegt werden."; return; }
   const nachname=document.getElementById("new-nachname").value.trim();
   const vorname=document.getElementById("new-vorname").value.trim();
   const posRolle="";
@@ -2750,6 +2764,7 @@ function touchZaehlerSpeichern() {
 
 // Neue Person
 function touchNeuePersonOeffnen(vorname="") {
+  if(istOffline || !navigator.onLine) { toast("Im Offline-Modus nicht möglich."); return; }
   document.getElementById("touch-new-dialog").classList.add("open");
   document.getElementById("touch-new-error").textContent = "";
   document.getElementById("touch-new-status").style.display = "none";
