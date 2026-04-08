@@ -884,7 +884,7 @@ function lizenzInputFormatieren(input) {
 // ────────────────────────────────────────────────────────────
 
 const LS_NS = "catering_Demo_";
-let PROJEKT_KUERZEL = "Demo";
+let PROJEKT_KUERZEL = "";
 let SESSION_PW = localStorage.getItem(LS_NS + "pw") || "";
 let _userId = null;
 let allePersonen = [], anwesendHeute = new Set(), exportDaten = [], autosaveTimer = null;
@@ -893,7 +893,7 @@ let sortierung = "nachname", personenMitTeilnahme = new Set();
 // Start: Lizenz prüfen, dann Login-Screen zeigen
 document.addEventListener("DOMContentLoaded", () => {
   const lp = document.getElementById("login-projekt");
-  if(lp) lp.textContent = "· " + PROJEKT_KUERZEL;
+  if(lp) lp.textContent = PROJEKT_KUERZEL ? "· " + PROJEKT_KUERZEL : "";
   lizenzBeiStartPruefen();
 });
 
