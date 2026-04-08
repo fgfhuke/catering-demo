@@ -2313,7 +2313,7 @@ function renderTouchListe(suche) {
       sidebar.style.display = "none";
     } else {
       sidebar.innerHTML = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(b =>
-        `<span style="font-family:var(--mono);font-size:10px;font-weight:700;color:${buchstaben.has(b)?"var(--accent)":"var(--border)"};padding:1px 8px;display:block;text-align:center;line-height:1.8;cursor:pointer" ontouchend="event.preventDefault();touchAlphaScroll('${b}')" onclick="touchAlphaScroll('${b}')">${b}</span>`
+        `<span style="font-family:var(--mono);font-size:11px;font-weight:700;color:${buchstaben.has(b)?"var(--accent)":"var(--border)"};padding:0 4px;display:block;text-align:center;line-height:1.3;cursor:pointer" ontouchend="event.preventDefault();touchAlphaScroll('${b}')" onclick="touchAlphaScroll('${b}')">${b}</span>`
       ).join("");
       sidebar.style.display = "flex";
     }

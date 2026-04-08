@@ -2874,6 +2874,7 @@ function touchZaehlerSpeichern() {
 
 // Neue Person
 function touchNeuePersonOeffnen(vorname="") {
+  if(istOffline || !navigator.onLine) { toast("Im Offline-Modus nicht möglich."); return; }
   document.getElementById("touch-new-dialog").classList.add("open");
   document.getElementById("touch-new-error").textContent = "";
   document.getElementById("touch-new-status").style.display = "none";
