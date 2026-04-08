@@ -2044,11 +2044,8 @@ function csvExport() {
   ].join(";"));
   const csv=[header,...rows].join("\n");
   const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url; a.download=`catering_${document.getElementById("monat-input").value}.csv`;
-  a.click(); URL.revokeObjectURL(url);
-  toast("CSV exportiert");
+  const filename=`catering_${document.getElementById("monat-input").value}.csv`;
+  exportModalZeigen(blob, filename, filename);
 }
 
 function pdfExport() {
@@ -2192,8 +2189,9 @@ function pdfExport() {
     },
   });
 
-  doc.save(`catering_${monat}${projekt.replace(" · ","_")}.pdf`);
-  toast("PDF exportiert");
+  const filename = `catering_${monat}${projekt.replace(" · ","_")}.pdf`;
+  const blob = doc.output("blob");
+  exportModalZeigen(blob, filename, filename);
 }
 
 
@@ -2669,9 +2667,22 @@ function touchKomparsenFertig() {
 
 // ── Touch Export ─────────────────────────────────────────────
 let _touchExportTyp = null;
+let _exportPendingBlob = null;
+let _exportPendingFilename = null;
+
+function exportModalZeigen(blob, filename, label) {
+  _exportPendingBlob = blob;
+  _exportPendingFilename = filename;
+  const lbl = document.getElementById("touch-export-label");
+  if(lbl) lbl.textContent = label;
+  const teilenBtn = document.getElementById("touch-export-teilen-btn");
+  if(teilenBtn) teilenBtn.style.display = navigator.share ? "block" : "none";
+  document.getElementById("touch-export-modal").style.display = "flex";
+}
 
 function touchExportZeigen(typ) {
   _touchExportTyp = typ;
+  _exportPendingBlob = null;
   const datum = touchTempDatum || heute();
   const [y,m,t] = datum.split("-");
   const wt = ["So","Mo","Di","Mi","Do","Fr","Sa"][new Date(datum+"T12:00:00").getDay()];
@@ -2684,6 +2695,35 @@ function touchExportZeigen(typ) {
 
 async function touchExportDurchfuehren(teilen) {
   document.getElementById("touch-export-modal").style.display = "none";
+
+  // Desktop-Export (vorbereiteter Blob von csvExport/pdfExport)
+  if(_exportPendingBlob) {
+    const blob = _exportPendingBlob;
+    const filename = _exportPendingFilename;
+    _exportPendingBlob = null; _exportPendingFilename = null;
+    if(teilen) {
+      try {
+        let shareBlob = blob, shareFilename = filename;
+        if(filename.endsWith(".csv") && typeof JSZip !== "undefined") {
+          const zip = new JSZip();
+          zip.file(filename, blob);
+          shareBlob = await zip.generateAsync({type:"blob"});
+          shareFilename = filename.replace(".csv", ".zip");
+        }
+        const file = new File([shareBlob], shareFilename, {type: shareBlob.type});
+        await navigator.share({files:[file], title:"Catering Export"});
+        return;
+      } catch(e) { if(e.name === "AbortError") return; }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+    toast(filename.endsWith(".csv") ? "CSV exportiert" : "PDF exportiert");
+    return;
+  }
+
+  // Touch-Export (Tagesexport)
   const datum = touchTempDatum || heute();
   const [y,m,t] = datum.split("-");
   const wt = ["So","Mo","Di","Mi","Do","Fr","Sa"][new Date(datum+"T12:00:00").getDay()];
