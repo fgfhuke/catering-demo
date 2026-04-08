@@ -2741,9 +2741,27 @@ let touchConfirmId = null;
 function touchToggle(id) {
   const p = allePersonen.find(x => x.id === id);
   const an = anwesendHeute.has(id);
-  touchConfirmId = id;
   const name = p ? (p.vorname ? `${p.nachname}, ${p.vorname}` : p.nachname) : id;
-  // Haken sofort visuell setzen/löschen (vor Bestätigung)
+
+  if(!touchTempDatum) {
+    // Heute → direkt togglen, kein Overlay
+    const warAn = an;
+    toggle(id);
+    if(warAn) {
+      touchRenderListe(document.getElementById("touch-suche").value.toLowerCase().trim());
+    } else {
+      setTimeout(()=>{
+        document.getElementById("touch-suche").value = "";
+        document.getElementById("touch-suche-clear").style.display = "none";
+        document.getElementById("touch-list").innerHTML = '';
+        touchSaveStatusAktualisieren();
+      }, 1000);
+    }
+    return;
+  }
+
+  // Edit-Modus (anderes Datum) → Overlay zeigen
+  touchConfirmId = id;
   const row = document.querySelector(`#touch-list .touch-person-row[data-pid="${id}"]`);
   if(row) {
     const newAn = !an;

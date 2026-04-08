@@ -2335,9 +2335,16 @@ let touchConfirmId = null;
 function touchToggle(id) {
   const p = allePersonen.find(x => x.id === id);
   const an = anwesendHeute.has(id);
-  touchConfirmId = id;
   const name = p ? (p.vorname ? `${p.nachname}, ${p.vorname}` : p.nachname) : id;
-  // Haken sofort visuell setzen/löschen (vor Bestätigung)
+
+  if(!touchTempDatum) {
+    // Heute → direkt togglen, kein Overlay (Scrollposition bleibt via renderListe)
+    toggle(id);
+    return;
+  }
+
+  // Edit-Modus (anderes Datum) → Overlay zeigen
+  touchConfirmId = id;
   const row = document.querySelector(`.touch-person-row[data-pid="${id}"]`);
   if(row) {
     const newAn = !an;
