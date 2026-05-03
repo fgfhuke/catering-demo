@@ -301,7 +301,7 @@ thead .matrix-col-day.we{background:#fff3e0}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
       <div class="login-logo">Film · Set</div>
       <div style="text-align:right;font-family:var(--mono);font-size:11px;color:var(--border2);letter-spacing:0.08em;line-height:1.6">
-        <div>V 3.5</div>
+        <div>V 3.6</div>
         <div style="font-size:10px">© JH 2026</div>
       </div>
     </div>
@@ -326,7 +326,7 @@ thead .matrix-col-day.we{background:#fff3e0}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
       <div class="login-logo">Film · Set</div>
       <div style="text-align:right;font-family:var(--mono);font-size:11px;color:var(--border2);letter-spacing:0.08em;line-height:1.6">
-        <div>V 3.5</div>
+        <div>V 3.6</div>
         <div style="font-size:10px">© JH 2026</div>
       </div>
     </div>
@@ -350,7 +350,7 @@ thead .matrix-col-day.we{background:#fff3e0}
     <button class="btn-icon" id="topbar-back-touch" onclick="zurückZuTouch()" ontouchend="event.preventDefault();zurückZuTouch()" title="Zurück zur mobilen Ansicht" style="display:none;font-size:22px;color:var(--accent)">←</button>
     <div class="topbar-brand" id="topbar-brand-btn" style="cursor:pointer;user-select:none;-webkit-user-select:none">Catering <span id="topbar-projekt" style="opacity:0.7;font-size:11px"></span></div>
     <div class="topbar-date" id="topbar-date"></div>
-    <div style="font-family:var(--mono);font-size:11px;color:var(--border2);letter-spacing:0.08em">V 3.5</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--border2);letter-spacing:0.08em">V 3.6</div>
     <button class="btn-icon" onclick="logout()" title="Abmelden" style="padding:8px;background:transparent;border:none;color:var(--muted);cursor:pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><line x1="12" y1="3" x2="12" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button>
   </div>
   <div class="tabs">
@@ -641,7 +641,7 @@ thead .matrix-col-day.we{background:#fff3e0}
   <div class="touch-topbar">
     <div class="touch-brand" id="touch-brand-btn" style="font-size:17px">Catering <span id="touch-projekt" style="opacity:.7;font-size:13px"></span></div>
     <span class="touch-save-status" id="touch-save-status"></span>
-    <span style="font-family:var(--mono);font-size:13px;color:var(--border2);letter-spacing:.08em" id="touch-version">V 3.5</span>
+    <span style="font-family:var(--mono);font-size:13px;color:var(--border2);letter-spacing:.08em" id="touch-version">V 3.6</span>
     <button class="btn-icon" onclick="logout()" style="font-size:18px;color:var(--muted)" style="padding:8px;background:transparent;border:none;color:var(--muted);cursor:pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><line x1="12" y1="3" x2="12" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button>
   </div>
 
@@ -1056,7 +1056,7 @@ async function sbExportMonat({monat}) {
   const persMap = {};
   (data||[]).forEach(r => {
     const key = r.person_id;
-    if(!persMap[key]) persMap[key] = {name:r.name, abteilung:r.abteilung||"", tage:[], anzahl:0};
+    if(!persMap[key]) persMap[key] = {pid:r.person_id, name:r.name, abteilung:r.abteilung||"", tage:[], anzahl:0};
     if(r.person_id === "KOMP01" || r.person_id === "GAEST01") {
       persMap[key].tage.push(r.datum);
       if(!persMap[key].tagAnzahlen) persMap[key].tagAnzahlen = {};
@@ -2099,6 +2099,12 @@ async function personAnlegen() {
   const position=abteilung;
   if(!nachname){document.getElementById("add-error").textContent="Nachname / Firma erforderlich";return;}
   const name=vorname?`${nachname}, ${vorname}`:nachname;
+  const nachnameLower=nachname.toLowerCase();
+  const vornameLower=vorname.toLowerCase();
+  const dup=allePersonen.find(p=>p.aktiv!==false && (p.nachname||"").toLowerCase()===nachnameLower && (p.vorname||"").toLowerCase()===vornameLower);
+  if(dup){
+    if(!confirm(`Eine Person "${name}" existiert bereits.\n\nTrotzdem als zweite Person anlegen?`)) return;
+  }
   const saveBtn=document.getElementById("add-save-btn");
   const statusBar=document.getElementById("add-status-bar");
   saveBtn.disabled=true;
@@ -2958,12 +2964,18 @@ async function touchPersonAnlegen() {
   const abteilung = document.getElementById("touch-new-abt").value;
   if(!nachname) { document.getElementById("touch-new-error").textContent = "Nachname erforderlich"; return; }
 
+  const name = vorname ? `${nachname}, ${vorname}` : nachname;
+  const nachnameLower = nachname.toLowerCase();
+  const vornameLower = vorname.toLowerCase();
+  const dup = allePersonen.find(p => p.aktiv !== false && (p.nachname||"").toLowerCase() === nachnameLower && (p.vorname||"").toLowerCase() === vornameLower);
+  if(dup) {
+    if(!confirm(`Eine Person "${name}" existiert bereits.\n\nTrotzdem als zweite Person anlegen?`)) return;
+  }
+
   const btn = document.getElementById("touch-new-save-btn");
   btn.disabled = true;
   document.getElementById("touch-new-status").style.display = "flex";
   document.getElementById("touch-new-error").textContent = "";
-
-  const name = vorname ? `${nachname}, ${vorname}` : nachname;
   try {
     const res = await api("addPerson", {name, abteilung, rolle:""});
     if(res.ok) {
@@ -3025,15 +3037,9 @@ async function matrixLaden() {
     if(!res.ok){c.innerHTML=`<div style="color:var(--red);padding:16px">${res.error}</div>`;return;}
     matrixAnwesend = {};
     matrixKomparsen = {};
-    const nameToId = {};
-    allePersonen.forEach(p => {
-      const n = p.vorname ? `${p.nachname}, ${p.vorname}` : p.nachname;
-      nameToId[n] = p.id;
-    });
     (res.eintraege||[]).forEach(e => {
       if(e.name === "Komparsen") { matrixKomparsen = e.tagAnzahlen || {}; return; }
-      const pid = nameToId[e.name];
-      if(pid) matrixAnwesend[pid] = new Set(e.tage||[]);
+      if(e.pid) matrixAnwesend[e.pid] = new Set(e.tage||[]);
     });
     matrixRendern(monat);
   } catch(e) { c.innerHTML='<div style="color:var(--red);padding:16px">Verbindungsfehler</div>'; }

@@ -1,5 +1,5 @@
 // Service Worker — Catering ZvE V2.0
-const CACHE = "catering-demo-v3-5";
+const CACHE = "catering-demo-v3-6";
 const HTML_FILES = ["./index.html", "./listenansicht.html"];
 const CDN_FILES = [
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
