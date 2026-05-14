@@ -36,6 +36,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 
 label{display:block;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
 input[type=text],input[type=email],input[type=password],input[type=date],input[type=month],input[type=search],select,textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--sans);font-size:17px;padding:12px 14px;outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
 input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,107,60,.12)}
 .field{margin-bottom:18px}
 
@@ -3132,7 +3135,7 @@ async function matrixPersonLoeschen(pid) {
 function matrixKompKlick(td, datum) {
   if(td.querySelector('input')) return;
   const wert=matrixKomparsen[datum]||0;
-  td.innerHTML=`<input type="number" min="0" value="${wert}" style="width:22px;font-size:10px;border:none;outline:none;text-align:center;background:transparent;color:var(--text);padding:0;-webkit-appearance:none;-moz-appearance:textfield" onclick="event.stopPropagation()" onblur="matrixKompSpeichern(this,'${datum}')" onkeydown="if(event.key==='Enter')this.blur()">`;
+  td.innerHTML=`<input type="number" min="0" value="${wert}" style="width:22px;font-size:10px;border:none;outline:none;text-align:center;background:transparent;color:var(--text);padding:0" onclick="event.stopPropagation()" onblur="matrixKompSpeichern(this,'${datum}')" onkeydown="if(event.key==='Enter')this.blur()">`;
   const inp=td.querySelector('input');
   inp.focus(); inp.select();
 }
