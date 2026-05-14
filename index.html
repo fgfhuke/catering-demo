@@ -2343,8 +2343,8 @@ async function csvExport() {
     `"${e.abteilung}"`,
     e.anzahl,
     ...alleTage.map(t=>{
-      if(e.tagAnzahlen) return e.tagAnzahlen[t]||"0";
-      return e.tage.includes(t)?"1":"0";
+      if(e.tagAnzahlen) return e.tagAnzahlen[t]||"";
+      return e.tage.includes(t)?"1":"";
     })
   ].join(";"));
   const csv=[header,...rows].join("\n");
