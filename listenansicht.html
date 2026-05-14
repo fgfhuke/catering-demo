@@ -138,14 +138,15 @@ textarea{resize:vertical;min-height:120px;font-family:var(--mono);font-size:15px
 .export-table{border-collapse:collapse;font-size:11px;min-width:100%}
 /* Header: Name fixiert links, Wochentag oben, Tag darunter */
 .export-table th{font-weight:600;font-size:10px;color:var(--muted);padding:3px 4px;border-bottom:1.5px solid var(--border);background:var(--surface2);white-space:nowrap;text-align:center;position:sticky;top:0;z-index:1}
-.export-table th.col-name{text-align:left;position:sticky;left:0;z-index:3;background:var(--surface2);min-width:120px;max-width:160px;padding:3px 6px}
-.export-table th.col-sum{background:var(--accent-bg)}
+.export-table th.col-name{text-align:left;position:sticky;left:0;z-index:3;background:var(--surface2);width:160px;min-width:160px;max-width:160px;padding:3px 6px}
+.export-table th.col-sum{background:var(--accent-bg);position:sticky;left:160px;z-index:3}
 .export-table td{padding:2px 4px;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap;text-align:center;font-size:10px;line-height:1.4}
-.export-table td.col-name{text-align:left;position:sticky;left:0;background:var(--surface);z-index:2;min-width:120px;max-width:160px;padding:2px 6px;overflow:hidden;text-overflow:ellipsis;font-size:11px}
-.export-table td.col-sum{font-family:var(--mono);font-weight:700;color:var(--accent);background:var(--accent-bg);font-size:11px}
+.export-table td.col-name{text-align:left;position:sticky;left:0;background:var(--surface);z-index:2;width:160px;min-width:160px;max-width:160px;padding:2px 6px;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.export-table td.col-sum{font-family:var(--mono);font-weight:700;color:var(--accent);background:var(--accent-bg);font-size:11px;position:sticky;left:160px;z-index:2}
 /* Abteilungs-Gruppenzeile */
 .export-table .row-group td{background:#e8e6de;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#555;padding:3px 6px;border-bottom:1px solid var(--border2);border-top:1.5px solid var(--border2)}
-.export-table .row-group td.col-name{background:#e8e6de;position:sticky;left:0;z-index:2}
+.export-table .row-group td.col-name{background:#e8e6de;padding:0;position:static}
+.export-table .row-group td.col-name .row-group-label{display:inline-block;position:sticky;left:6px;padding:3px 6px}
 .anzahl-badge{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent)}
 
 
@@ -2000,7 +2001,7 @@ async function exportLaden() {
     let rows="";
     sortierteGruppen.forEach(abt=>{
       const personen=gruppen[abt];
-      rows+=`<tr class="row-group"><td class="col-name" colspan="${alleTage.length+2}">${abt}</td></tr>`;
+      rows+=`<tr class="row-group"><td class="col-name" colspan="${alleTage.length+2}"><span class="row-group-label">${abt}</span></td></tr>`;
       personen.sort((a,b)=>a.name.localeCompare(b.name,"de")).forEach(e=>{
         rows+=`<tr>
           <td class="col-name">${e.name}</td>
