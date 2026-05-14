@@ -2030,10 +2030,14 @@ async function exportLaden() {
 
 function csvExport() {
   if(!exportDaten.length)return;
-  const alleTage=[...new Set(exportDaten.flatMap(e=>e.tage))].sort();
+  const monat=document.getElementById("monat-input").value;
+  const [jahr,mon]=monat.split("-").map(Number);
+  const tageImMonat=new Date(jahr, mon, 0).getDate();
+  const alleTage=Array.from({length:tageImMonat}, (_,i)=>`${monat}-${String(i+1).padStart(2,"0")}`);
   const tageFormatiert=alleTage.map(t=>formatDatum(t).slice(0,5));
   const header=["Name","Position","Gesamt",...tageFormatiert].join(";");
-  const rows=exportDaten.map(e=>[
+  const sortiert=[...exportDaten].sort((a,b)=>a.name.localeCompare(b.name,"de"));
+  const rows=sortiert.map(e=>[
     `"${e.name}"`,
     `"${e.abteilung}"`,
     e.anzahl,
@@ -2044,7 +2048,7 @@ function csvExport() {
   ].join(";"));
   const csv=[header,...rows].join("\n");
   const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
-  const filename=`catering_${document.getElementById("monat-input").value}.csv`;
+  const filename=`catering_${monat}.csv`;
   exportModalZeigen(blob, filename, filename);
 }
 
@@ -2122,6 +2126,14 @@ function pdfExport() {
   doc.text(`Erstellt: ${new Date().toLocaleDateString("de-DE")}`, 10, 16);
   doc.setTextColor(0);
 
+  // Spaltenbreiten — alle Tagesspalten gleich breit
+  const tagBreite = (281 - 45) / alleTage.length;
+  const colStyles = {
+    0: { halign:"left", cellWidth:35, fontStyle:"bold" },
+    1: { cellWidth:10, halign:"center" },
+  };
+  alleTage.forEach((_, i) => { colStyles[i+2] = { cellWidth: tagBreite, halign:"center" }; });
+
   // Tabelle
   doc.autoTable({
     head: [kopf],
@@ -2129,20 +2141,12 @@ function pdfExport() {
     startY: 20,
     margin: { left:8, right:8 },
     styles: { fontSize:7, cellPadding:1.5, overflow:"ellipsize", halign:"center" },
-    columnStyles: {
-      0: { halign:"left", cellWidth:35, fontStyle:"bold" },
-      1: { cellWidth:10, halign:"center" },
-    },
-    headStyles: {
-      fillColor:[238,237,232], textColor:[80,80,80],
-      fontStyle:"bold", fontSize:7, halign:"center"
-    },
+    columnStyles: colStyles,
     headStyles: { fillColor:[238,237,232], textColor:[60,60,60], fontSize:6.5 },
     didParseCell: (data) => {
       // Zelle mit 1 = Anwesenheit — Text leer lassen, Punkt via didDrawCell
       if(data.cell.raw === 1) {
         data.cell.text = [""];
-        data.cell.styles.fillColor = [255,255,255];
       }
       // Komparsen/Gäste: Zahl anzeigen
       if(typeof data.cell.raw === "number" && data.cell.raw > 1 && data.column.index >= 2) {
