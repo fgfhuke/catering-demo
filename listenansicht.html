@@ -741,13 +741,31 @@ async function api(action, extra={}) {
 
 // ── Supabase Backend-Funktionen ────────────────────────────
 
+// Liest ALLE Zeilen einer Query in 1000er-Seiten (umgeht das stille PostgREST-1000-Limit).
+// buildQuery() MUSS bei jedem Aufruf einen frischen Query-Builder liefern und eine
+// eindeutige Sortierung (id) setzen, damit an den Seitengrenzen nichts übersprungen/doppelt wird.
+async function sbSelectAll(buildQuery) {
+  const PAGE = 1000;
+  let von = 0, alle = [];
+  while (true) {
+    const { data, error } = await buildQuery().range(von, von + PAGE - 1);
+    if (error) return { data: null, error };
+    alle = alle.concat(data || []);
+    if (!data || data.length < PAGE) break;
+    von += PAGE;
+  }
+  return { data: alle, error: null };
+}
+
 async function sbGetPersonen() {
   const { data: personen, error: e1 } = await _sb.from("personen").select("*").eq("aktiv", true);
   if(e1) return {ok:false, error:e1.message};
-  const { data: tmRows, error: e2 } = await _sb.from("teilnahme")
-    .select("person_id")
-    .not("person_id", "eq", "KOMP01")
-    .not("person_id", "eq", "GAEST01");
+  const { data: tmRows, error: e2 } = await sbSelectAll(() =>
+    _sb.from("teilnahme")
+      .select("person_id")
+      .not("person_id", "eq", "KOMP01")
+      .not("person_id", "eq", "GAEST01")
+      .order("id", {ascending:true}));
   if(e2) return {ok:false, error:e2.message};
   const personenMitT = [...new Set((tmRows||[]).map(r => r.person_id))];
   return {ok:true, personen, personenMitTeilnahme: personenMitT, projekt: PROJEKT_KUERZEL};
@@ -825,7 +843,8 @@ async function sbSetTeilnahme({datum, eintraege, komparsen, gaeste}) {
 }
 
 async function sbGetMonate() {
-  const { data, error } = await _sb.from("teilnahme").select("datum").order("datum", {ascending:true});
+  const { data, error } = await sbSelectAll(() =>
+    _sb.from("teilnahme").select("datum").order("id", {ascending:true}));
   if(error) return {ok:false, error:error.message};
   const monate = [...new Set((data||[]).map(r => r.datum.slice(0,7)))].sort();
   return {ok:true, monate};
@@ -835,10 +854,11 @@ async function sbExportMonat({monat}) {
   const vonDatum = monat + "-01";
   const [y, m] = monat.split("-").map(Number);
   const bisDatum = monat + "-" + String(new Date(y, m, 0).getDate()).padStart(2,"0");
-  const { data, error } = await _sb.from("teilnahme")
-    .select("datum, person_id, name, abteilung, anzahl")
-    .gte("datum", vonDatum).lte("datum", bisDatum)
-    .order("datum", {ascending:true});
+  const { data, error } = await sbSelectAll(() =>
+    _sb.from("teilnahme")
+      .select("datum, person_id, name, abteilung, anzahl")
+      .gte("datum", vonDatum).lte("datum", bisDatum)
+      .order("datum", {ascending:true}).order("id", {ascending:true}));
   if(error) return {ok:false, error:error.message};
   const persMap = {};
   (data||[]).forEach(r => {
